@@ -5,6 +5,7 @@ import { Countdown } from '../CountdownTimer'
 import { RoundedButton } from '../RoundedButton'
 import { colors } from '../../utils/colors'
 import { fontSizes, spacing } from '../../utils/sizes'
+import { Timing } from './Timing'
 
 // ONE_SECOND_IN_MS and PATTERN constance is for the vibration pattern
 const ONE_SECOND_IN_MS = 1000
@@ -20,8 +21,14 @@ export const Timer = ({ focusSubject, onTimerEnd, clearSubject }) => {
   const [isStarted, setIsStarted] = useState(false)
   const [progress, setProgress] = useState(1)
 
-  // Todo add minutes to timer next
   const [minutes, setMinutes] = useState(0.1)
+
+  const onEnd = (reset) => {
+    Vibration.vibrate(PATTERN)
+    setIsStarted(false)
+    setProgress(1)
+    reset()
+  }
 
   return (
     <View style={styles.container}>
@@ -29,10 +36,9 @@ export const Timer = ({ focusSubject, onTimerEnd, clearSubject }) => {
       <View style={styles.countDownContainer}>
         <Countdown
           onProgress={setProgress}
-          onEnd={() => {
-            Vibration.vibrate(PATTERN)
-          }}
+          onEnd={onEnd}
           isPaused={!isStarted}
+          minutes={minutes}
         />
         <View style={{ padding: spacing.xxl }}>
           <Text style={styles.title}>Focusing on: </Text>
@@ -47,6 +53,11 @@ export const Timer = ({ focusSubject, onTimerEnd, clearSubject }) => {
           style={{ height: spacing.sm }}
         />
       </View>
+      {/* Timer controls view starts here */}
+
+      <View style={styles.timingWrapper}>
+        <Timing onChangeTime={setMinutes} />
+      </View>
       {/* Play & Pause button starts here */}
       <View style={styles.buttonWrapper}>
         {!isStarted && (
@@ -56,7 +67,10 @@ export const Timer = ({ focusSubject, onTimerEnd, clearSubject }) => {
           <RoundedButton title="pause" onPress={() => setIsStarted(false)} />
         )}
       </View>
-      {/* Timer controls view starts here */}
+      {/* Clear button starts here */}
+      <View style={styles.clearSubjectWrapper}>
+        <RoundedButton title="-" size={50} onPress={clearSubject} />
+      </View>
     </View>
   )
 }
@@ -66,16 +80,27 @@ const styles = StyleSheet.create({
     flex: 1
   },
   countDownContainer: {
-    flex: 0.5,
+    flex: 0.55,
     alignItems: 'center',
     justifyContent: 'center'
+    // backgroundColor: 'green'
+  },
+  timingWrapper: {
+    flex: 0.1,
+    flexDirection: 'row',
+    padding: spacing.xxl
   },
   buttonWrapper: {
+    // backgroundColor: 'yellow',
     flex: 0.3,
     flexDirection: 'row',
-    padding: 15,
+    padding: spacing.md,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  clearSubjectWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'center'
   },
   title: {
     color: colors.white,

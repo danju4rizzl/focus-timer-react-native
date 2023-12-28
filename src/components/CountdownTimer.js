@@ -10,18 +10,22 @@ const minutesToMillis = (min) => min * 1000 * 60
 // Function to format time with leading zero if less than 10
 const formatTime = (time) => (time < 10 ? `0${time}` : time)
 
+
 // Countdown component
 export const Countdown = ({ minutes = 0.1, isPaused, onProgress, onEnd }) => {
   const interval = React.useRef(null)
 
   const [millis, setMillis] = useState(null)
 
+  // reset the timer
+  const reset = () => setMillis(minutesToMillis(minutes))
+
   // Function to handle countdown logic
   const countDown = () => {
     setMillis((time) => {
       if (time === 0) {
         clearInterval(interval.current)
-        onEnd()
+        onEnd(reset)
         return time
       }
       const timeLeft = time - 1000
