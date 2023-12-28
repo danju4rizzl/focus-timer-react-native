@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, View, Vibration, Platform } from 'react-native'
+import { StyleSheet, Text, View, Vibration } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { Countdown } from '../CountdownTimer'
 import { RoundedButton } from '../RoundedButton'
 import { colors } from '../../utils/colors'
 import { fontSizes, spacing } from '../../utils/sizes'
 import { Timing } from './Timing'
+
+import { useKeepAwake } from 'expo-keep-awake'
 
 // ONE_SECOND_IN_MS and PATTERN constance is for the vibration pattern
 const ONE_SECOND_IN_MS = 1000
@@ -18,6 +20,7 @@ const PATTERN = [
 ]
 
 export const Timer = ({ focusSubject, onTimerEnd, clearSubject }) => {
+  useKeepAwake()
   const [isStarted, setIsStarted] = useState(false)
   const [progress, setProgress] = useState(1)
 
