@@ -1,30 +1,62 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
-import { colors } from '../../utils/colors'
-import { spacing } from '../../utils/sizes'
+import { StyleSheet, Text, View, Vibration, Platform } from 'react-native'
+import { ProgressBar } from 'react-native-paper'
 import { Countdown } from '../CountdownTimer'
 import { RoundedButton } from '../RoundedButton'
+import { colors } from '../../utils/colors'
+import { fontSizes, spacing } from '../../utils/sizes'
+
+// ONE_SECOND_IN_MS and PATTERN constance is for the vibration pattern
+const ONE_SECOND_IN_MS = 1000
+const PATTERN = [
+  1 * ONE_SECOND_IN_MS,
+  1 * ONE_SECOND_IN_MS,
+  1 * ONE_SECOND_IN_MS,
+  1 * ONE_SECOND_IN_MS,
+  1 * ONE_SECOND_IN_MS
+]
 
 export const Timer = ({ focusSubject, onTimerEnd, clearSubject }) => {
-  const [isStared, setIsStarted] = useState(false)
+  const [isStarted, setIsStarted] = useState(false)
+  const [progress, setProgress] = useState(1)
+
+  // Todo add minutes to timer next
+  const [minutes, setMinutes] = useState(0.1)
 
   return (
     <View style={styles.container}>
+      {/* Countdown timer and Task starts here  */}
       <View style={styles.countDownContainer}>
         <Countdown
-          onProgress={() => {}}
-          onEnd={() => {}}
-          isPaused={!isStared}
+          onProgress={setProgress}
+          onEnd={() => {
+            Vibration.vibrate(PATTERN)
+          }}
+          isPaused={!isStarted}
+        />
+        <View style={{ padding: spacing.xxl }}>
+          <Text style={styles.title}>Focusing on: </Text>
+          <Text style={styles.task}>{focusSubject}</Text>
+        </View>
+      </View>
+      {/* Progress bar starts here   */}
+      <View style={{ paddingTop: spacing.sm }}>
+        <ProgressBar
+          progress={progress}
+          color={colors.lightRed}
+          style={{ height: spacing.sm }}
         />
       </View>
+      {/* Play & Pause button starts here */}
       <View style={styles.buttonWrapper}>
-        {!isStared && (
+        {!isStarted && (
           <RoundedButton title="start" onPress={() => setIsStarted(true)} />
         )}
-        {isStared && (
+        {isStarted && (
           <RoundedButton title="pause" onPress={() => setIsStarted(false)} />
         )}
       </View>
+      {/* Timer controls view starts here */}
     </View>
   )
 }
@@ -32,10 +64,8 @@ export const Timer = ({ focusSubject, onTimerEnd, clearSubject }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1
-    // backgroundColor: 'green'
   },
   countDownContainer: {
-    // backgroundColor: 'yellow',
     flex: 0.5,
     alignItems: 'center',
     justifyContent: 'center'
@@ -47,10 +77,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  text: {
-    fontSize: 30,
+  title: {
     color: colors.white,
-    padding: spacing.sm,
-    backgroundColor: colors.lightRed
+    fontSize: fontSizes.lg,
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
+  task: {
+    fontSize: fontSizes.md,
+    textTransform: 'capitalize',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: colors.white
   }
 })
